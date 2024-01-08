@@ -1,3 +1,50 @@
+// グループクエスト 1
+
+var npc_talk_status = -1;
+function action(mode, type, selection) {
+	if (mode != 1) {
+		return cm.dispose();
+	}
+
+	npc_talk_status++;
+	switch (npc_talk_status) {
+		case 0:
+			{
+				var mapid = cm.getMapId();
+				var text = "お～、会えて嬉しいよ！女神の塔を冒険したいの？グループに戦士、魔法使い、盗賊、弓使いが各1名以上いるとウィンキの祝福をかけてあげるわ。\r\n";
+				text += "#L" + 0 + "##b入場を申し込む。#k#l\r\n";
+				text += "#L" + 1 + "##b女神の塔について聞く。#k#l\r\n";
+				text += "#L" + 2 + "##bウィンキに食べ物を渡す。#k#l\r\n";
+				text += "#L" + 3 + "##b女神の羽について聞く。#k#l\r\n";
+				text += "#L" + 777 + "##bデバッグモード#k#l\r\n";
+				return cm.sendSimple(text);
+			}
+		case 1:
+			{
+				// test
+				if (selection == 777) {
+					var em = cm.getEventManager("OrbisPQ");
+					if (em == null) {
+						cm.sendOk("オルクエ 未実装");
+					}
+					else {
+						cm.sendOk("オルクエ 開催中");
+						var prop = em.getProperty("state");
+						if (prop == null || prop.equals("0")) {
+							em.startInstance(cm.getParty(), cm.getMap());
+						}
+					}
+				}
+				return cm.dispose();
+			}
+		default:
+			break;
+	}
+
+	return cm.dispose();
+}
+
+/*
 var status = -1;
 var minLevel = 51; // 35
 var maxLevel = 200; // 65
@@ -82,3 +129,4 @@ function action(mode, type, selection) {
 
     }
 }
+*/
