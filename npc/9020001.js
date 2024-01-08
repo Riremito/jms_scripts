@@ -7,20 +7,21 @@ var status;
 var curMap;
 var playerStatus;
 var chatState;
-var questions = Array("Here's the question. Collect the same number of coupons as the minimum level required to make the first job advancement as warrior.",
-    "Here's the question. Collect the same number of coupons as the minimum amount of STR needed to make the first job advancement as a warrior.",
-    "Here's the question. Collect the same number of coupons as the minimum amount of INT needed to make the first job advancement as a magician.",
-    "Here's the question. Collect the same number of coupons as the minimum amount of DEX needed to make the first job advancement as a bowman.",
-    "Here's the question. Collect the same number of coupons as the minimum amount of DEX needed to make the first job advancement as a thief.",
-    "Here's the question. Collect the same number of coupons as the minimum level required to advance to 2nd job.");
-var qanswers = Array(10, 35, 20, 25, 25, 30);
+var questions = Array("[法師]職業進行一次轉職需要多少等級？",
+    "[全職業]進行一次轉職需要多少等級？",
+    "[法師]職業進行一次轉職需要多少智力？",
+    "[弓箭手]職業進行一次轉職需要多少敏捷？",
+    "[盜賊]職業進行一次轉職需要多少敏捷？",
+    "[全職業]進行二次轉職需要多少等級？",
+    "[劍士]職業進行一次轉職需要多少力量？");
+var qanswers = Array(8, 10, 20, 25, 25, 30, 35);
 var party;
 var preamble;
-var stage2rects = Array(Rectangle(-770,-132,28,178),Rectangle(-733,-337,26,105),Rectangle(-601,-328,29,105),Rectangle(-495,-125,24,165));
+var stage2rects = Array(new Rectangle(-770,-132,28,178),new Rectangle(-733,-337,26,105),new Rectangle(-601,-328,29,105),new Rectangle(-495,-125,24,165));
 var stage2combos = Array(Array(0,1,1,1),Array(1,0,1,1),Array(1,1,0,1),Array(1,1,1,0));
-var stage3rects = Array(Rectangle(608,-180,140,50),Rectangle(791,-117,140,45),Rectangle(958,-180,140,50),Rectangle(876,-238,140,45),Rectangle(702,-238,140,45));
+var stage3rects = Array(new Rectangle(608,-180,140,50),new Rectangle(791,-117,140,45),new Rectangle(958,-180,140,50),new Rectangle(876,-238,140,45),new Rectangle(702,-238,140,45));
 var stage3combos = Array(Array(0,0,1,1,1),Array(0,1,0,1,1),Array(0,1,1,0,1),Array(0,1,1,1,0),Array(1,0,0,1,1),Array(1,0,1,0,1),Array(1,0,1,1,0),Array(1,1,0,0,1),Array(1,1,0,1,0),Array(1,1,1,0,0));
-var stage4rects = Array(Rectangle(910,-236,35,5),Rectangle(877,-184,35,5),Rectangle(946,-184,35,5),Rectangle(845,-132,35,5),Rectangle(910,-132,35,5),Rectangle(981,-132,35,5));
+var stage4rects = Array(new Rectangle(910,-236,35,5),new Rectangle(877,-184,35,5),new Rectangle(946,-184,35,5),new Rectangle(845,-132,35,5),new Rectangle(910,-132,35,5),new Rectangle(981,-132,35,5));
 var stage4combos = Array(Array(0,0,0,1,1,1),Array(0,0,1,0,1,1),Array(0,0,1,1,0,1),Array(0,0,1,1,1,0),Array(0,1,0,0,1,1),Array(0,1,0,1,0,1),Array(0,1,0,1,1,0),Array(0,1,1,0,0,1),Array(0,1,1,0,1,0),Array(0,1,1,1,0,0),Array(1,0,0,0,1,1),Array(1,0,0,1,0,1),Array(1,0,0,1,1,0),Array(1,0,1,0,0,1),Array(1,0,1,0,1,0),Array(1,0,1,1,0,0),Array(1,1,0,0,0,1),Array(1,1,0,0,1,0),Array(1,1,0,1,0,0),Array(1,1,1,0,0,0));
 var eye = 9300002;
 var necki = 9300000;
@@ -75,23 +76,28 @@ function action(mode, type, selection) {
 	status++;
     else
 	status--;
+
+	var eim = cm.getEventInstance();
+	if (eim == null) {
+	    cm.sendNext("please talk on kpq");
+		cm.dispose();
+		return;
+	}
     
     if (curMap == 1) { // First Stage.
 	if (playerStatus) { // Check if player is leader
 	    if (status == 0) {
-		var eim = cm.getEventInstance();
 		party = eim.getPlayers();
 		preamble = eim.getProperty("leader1stpreamble");
-
 		if (preamble == null) {
-		    cm.sendNext("Hello. Welcome to the first stage. Look around and you'll see Ligators wandering around. When you defeat them, they will cough up a #bcoupon#k. Every member of the party other than the leader should talk to me, geta  question, and gather up the same number of #bcoupons#k as the answer to the question I'll give to them.\r\nIf you gather up the right amount of #bcoupons#k, I'll give the #bpass#k to that player. Once all the party members other than the leader gather up the #bpasses#k and give them to the leader, the leader will hand over the #bpasses#k to me, clearing the stage in the process. The faster you take care of the stages, the more stages you'll be able to challenge. So I suggest you take care of things quickly and swiftly. Well then, best of luck to you.");
+		    cm.sendNext("你好，歡迎來到第一階段，看看周圍，你會看到在鱷魚四處走動，當你擊倒他們，他們會掉出 #b優惠券#k 不是隊長的每個成員都應該跟我說話，拿一個問題，並收集了相同數量的 #b優惠券#k 來回答這個問題，我會提供給他們。\r\n如果他收集了適量的#b優惠券#k答對我的問題，我會給他#b通行證#k。一旦全部其他成員收集完了#b通行證#k全部交給隊長，隊長再把#b通行證#k交給我，就可以過關前往下一階段了。");
 		    eim.setProperty("leader1stpreamble", "done");
 		    cm.dispose();
 		} else { // Check how many they have compared to number of party members
 		    // Check for stage completed
 		    var complete = eim.getProperty(curMap.toString() + "stageclear");
 		    if (complete != null) {
-			cm.sendNext("Please hurry on to the next stage, the portal opened!");
+			cm.sendNext("恭喜您過關 通往下一階段的門已開啟!");
 			cm.dispose();
 		    } else {
 			var numpasses = party.size() - 1;
@@ -112,6 +118,11 @@ function action(mode, type, selection) {
 	    }
 	} else { // Not leader
 	    var eim = cm.getChar().getEventInstance();
+            if (eim.getProperty(cm.getName()) != null) {
+	        cm.sendNext("恭喜你通過試煉！ 請等待其他組員收集完成。");
+		cm.dispose();
+	        return;
+            }
 	    pstring = "member1stpreamble" + cm.getChar().getId().toString();
 	    preamble = eim.getProperty(pstring);
 	    if (status == 0 && preamble == null) {
@@ -122,11 +133,11 @@ function action(mode, type, selection) {
 		    var questionNum = Math.floor(Math.random() * questions.length);
 		    eim.setProperty(qstring, questionNum.toString());
 		}
-		cm.sendNext("Here, you need to collect #bcoupons#k by defeating the same number of Ligators as the answer to the questions asked individually.");
+		cm.sendNext("在這裡，你需要擊敗鱷魚收集#b優惠券#k作為我提出的問題的答案。");
 	    } else if (status == 0) { // Otherwise, check for stage completed
 		var complete = eim.getProperty(curMap.toString() + "stageclear");
 		if (complete != null) {
-		    cm.sendNext("Please hurry on to the next stage, the portal opened!");
+//		    cm.sendNext("Please hurry on to the next stage, the portal opened!");
 		    cm.dispose();
 		} else {
 		    // Reply to player correct/incorrect response to the question they have been asked
@@ -135,16 +146,17 @@ function action(mode, type, selection) {
 		    var qcorr = cm.haveItem(4001007,(numcoupons+1));
 		    var enough = false;
 		    if (!qcorr) { // Not too many
-			qcorr = cm.haveItem(4001007,numcoupons);
+			qcorr = cm.haveItem(4001007, numcoupons);
 			if (qcorr) { // Just right
-			    cm.sendNext("That's the right answer! For that you have just received a #bpass#k. Please hand it to the leader of the party.");
+			    cm.sendNext("這是正確的答案！你已拿到一個#b通行證#k，請把它交給你的隊長。");
 			    cm.gainItem(4001007, -numcoupons);
 			    cm.gainItem(4001008, 1);
+                            eim.setProperty(cm.getName(), "done");
 			    enough = true;
 			}
 		    }
 		    if (!enough) {
-			cm.sendNext("I'm sorry, but that is not the right answer! Please have the correct number of coupons in your inventory.");
+			cm.sendNext("我很抱歉，但這不是正確的答案！請重新確認你的優惠券數目。");
 		    }
 		    cm.dispose();
 		}
@@ -174,18 +186,18 @@ function action(mode, type, selection) {
 		var passes = cm.haveItem(4001008,10);
 		if (passes) {
 		    // Clear stage
-		    cm.sendNext("Here's the portal that leads you to the last, bonus stage. It's a stage that allows you to defeat regular monsters a little easier. You'll be given a set amount of time to hunt as much as possible, but you can always leave the stage in the middle of it through the NPC. Again, congratulations on clearing all the stages. Take care...");
+		    cm.sendNext("下面是帶你到最後，獎金舞台門戶。這是一個舞台，讓你打敗怪物經常更容易一些。你會被給予的時間打獵盡可能一套數額，但你可以隨時離開舞台，在它通過NPC中間。再次，清除所有階段的祝賀。 保重...");
 		    party = eim.getPlayers();
 		    cm.gainItem(4001008, -10);
 		    clear(5,eim,cm);
 		    cm.givePartyExp(1500, party);
 		    cm.dispose();
 		} else { // Not done yet
-		    cm.sendNext("Hello. Welcome to the 5th and final stage. Walk around the map and you'll be able to find some Boss monsters. Defeat all of them, gather up #bthe passes#k, and please get them to me. Once you earn your pass, the leader of your party will collect them, and then get them to me once the #bpasses#k are gathered up. The monsters may be familiar to you, but they may be much stronger than you think, so please be careful. Good luck!");
+		    cm.sendNext("你必須帶來10張通行證給我！");
 		}
 		cm.dispose();
 	    } else { // Members
-		cm.sendNext("Welcome to the 5th and final stage.  Walk around the map and you will be able to find some Boss monsters.  Defeat them all, gather up the #bpasses#k, and give them to your leader.  Once you are done, return to me to collect your reward.");
+		cm.sendNext("歡迎來到第五和最後階段。在地圖上走動，你將能夠找到一些怪物。擊敗他們，會拿到#b通行證#k之後把它們給你的隊長。一旦您收集完成後，來我這領取你的報酬。");
 		cm.dispose();
 	    }
 	} else { // Give rewards and warp to bonus
@@ -270,7 +282,8 @@ function rectanglestages (cm) {
 		if (complete != null) {
 		    var mapClear = curMap.toString() + "stageclear";
 		    eim.setProperty(mapClear,"true"); // Just to be sure
-		    cm.sendNext("Please hurry on to the next stage, the portal opened!");
+//		    cm.sendNext("Please hurry on to the next stage, the portal opened!");
+		    cm.dispose();
 		} else { // Check for people on ropes and their positions
 		    var totplayers = 0;
 		    for (i = 0; i < objset.length; i++) {
@@ -331,9 +344,10 @@ function rectanglestages (cm) {
 	if (status == 0) {
 	    var complete = eim.getProperty(curMap.toString() + "stageclear");
 	    if (complete != null) {
-		cm.sendNext("Please hurry on to the next stage, the portal opened!");
+		cm.dispose();
+//		cm.sendNext("Please hurry on to the next stage, the portal opened!");
 	    } else {
-		cm.sendNext("Please have the party leader talk to me.");
+//		cm.sendNext("Please have the party leader talk to me.");
 		cm.dispose();
 	    }
 	} else {
@@ -349,6 +363,9 @@ function rectanglestages (cm) {
 }
 
 function getPrize(eim,cm) {
+//var itemList = new Array(2012005, 2012006, 2012005, 2012006, 2012005, //2012006);
+//var randNum = Math.floor(Math.random() * (itemList.length));
+//var randItem = itemList[randNum];
     var itemSetSel = Math.random();
     var itemSet;
     var itemSetQty;
@@ -371,7 +388,7 @@ function getPrize(eim,cm) {
     if (hasQty)
 	qty = itemSetQty[sel];
     cm.gainItem(itemSet[sel], qty);
-    cm.gainNX(1000);
+//    cm.gainItem(randItem, 100);
     cm.removeAll(4001007);
     cm.removeAll(4001008);
     cm.getPlayer().endPartyQuest(1201);

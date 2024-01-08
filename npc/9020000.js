@@ -17,10 +17,25 @@ function action(mode, type, selection) {
 				text += "#L" + 0 + "##bグループクエストがしたいです#k#l\r\n";
 				text += "#L" + 1 + "##b共にするグループメンバーを探したいです#k#l\r\n";
 				text += "#L" + 2 + "##b説明が聞きたいです#k#l\r\n";
+				text += "#L" + 3 + "##bデバッグモード#k#l\r\n";
 				return cm.sendSimple(text);
 			}
 		case 1:
 			{
+				// test
+				if (selection == 3) {
+					var em = cm.getEventManager("KerningPQ");
+					if (em == null) {
+						cm.sendOk("カニクエ 未実装");
+					}
+					else {
+						cm.sendOk("カニクエ 開催中");
+						var prop = em.getProperty("state");
+						if (prop == null || prop.equals("0")) {
+							em.startInstance(cm.getParty(), cm.getMap());
+						}
+					}
+				}
 				return cm.dispose();
 			}
 		default:
