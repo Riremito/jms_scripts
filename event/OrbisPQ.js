@@ -1,4 +1,4 @@
-var minPlayers = 3;
+var minPlayers = 6;
 var stg2_combo0 = Array("5", "4", "3", "3", "2");
 var stg2_combo1 = Array("0", "0", "1", "0", "1"); //unique combos only
 var stg2_combo2 = Array("0", "1", "1", "2", "2");
@@ -7,15 +7,15 @@ var cx = Array(200, -300, -300, -300, 200, 200, 200, -300, -300, 200, 200, -300,
 var cy = Array(-2321, -2114, -2910, -2510, -1526, -2716, -717, -1310, -3357, -1912, -1122, -1736, -915, -3116);
 
 function init() {
-em.setProperty("state", "0");
+        em.setProperty("state", "0");
 	em.setProperty("leader", "true");
 }
 
 function setup(eim, leaderid) {
 	em.getProperties().clear();
-em.setProperty("state", "1");
+        em.setProperty("state", "1");
 	em.setProperty("leader", "true");
-    var eim = em.newInstance("OrbisPQ" + leaderid);
+        var eim = em.newInstance("OrbisPQ" + leaderid);
 	em.setProperty("stage", "0"); //center stage
 	em.setProperty("pre", "0"); //first stage
 	em.setProperty("finished", "0"); //first stage
@@ -91,7 +91,9 @@ em.setProperty("state", "1");
         eim.setInstanceMap(920010100).resetFully();
         eim.setInstanceMap(920010200).resetFully();
         eim.setInstanceMap(920010300).resetFully();
-        eim.setInstanceMap(920010400).resetFully();
+	var map = eim.setInstanceMap(920010400);
+	map.resetFully();
+	map.shuffleReactors(2002004, 2002010);
         eim.setInstanceMap(920010500).resetFully();
         eim.setInstanceMap(920010600).resetFully();
         eim.setInstanceMap(920010601).resetFully();
@@ -99,17 +101,28 @@ em.setProperty("state", "1");
         eim.setInstanceMap(920010603).resetFully();
         eim.setInstanceMap(920010604).resetFully();
         eim.setInstanceMap(920010700).resetFully();
-        eim.setInstanceMap(920010800).resetFully();
+	var map = eim.setInstanceMap(920010800);
+	map.resetFully();
+	map.shuffleReactors(2001000, 2001001);
         eim.setInstanceMap(920010900).resetFully();
         eim.setInstanceMap(920010910).resetFully();
-        eim.setInstanceMap(920010911).resetFully();
-        eim.setInstanceMap(920010912).resetFully();
+        eim.setInstanceMap(920010911);
+//        eim.setInstanceMap(920010911).resetFully();
+	var map = eim.setInstanceMap(920010912);
+	map.resetFully();
+	map.setReactorState();
         eim.setInstanceMap(920010920).resetFully();
-        eim.setInstanceMap(920010921).resetFully();
-        eim.setInstanceMap(920010922).resetFully();
+        eim.setInstanceMap(920010921);
+//        eim.setInstanceMap(920010921).resetFully();
+	var map = eim.setInstanceMap(920010922);
+	map.resetFully();
+	map.setReactorState();
         eim.setInstanceMap(920010930).resetFully();
-        eim.setInstanceMap(920010931).resetFully();
-        eim.setInstanceMap(920010932).resetFully();
+        eim.setInstanceMap(920010931);
+//        eim.setInstanceMap(920010931).resetFully();
+	var map = eim.setInstanceMap(920010932);
+	map.resetFully();
+	map.setReactorState();
         eim.setInstanceMap(920011000).resetFully();
         eim.setInstanceMap(920011100).resetFully();
     eim.startEventTimer(3600000); //1 hr
@@ -148,8 +161,7 @@ function playerDisconnected(eim, player) {
 }
 
 function monsterValue(eim, mobId) {
-    if (mobId == 9300049 && em.getProperty("stage7").equals("0")) { //dark nep
-	eim.broadcastPlayerMsg(6, "Papa Pixie has been spawned.");
+    if (mobId == 9300049 && em.getProperty("stage7").equals("0")) {
 	var mob = em.getMonster(9300039);
 	eim.registerMonster(mob);
 	em.setProperty("stage7", "0");
@@ -157,7 +169,7 @@ function monsterValue(eim, mobId) {
     } else if (mobId == 9300040) {
 	var st = parseInt(em.getProperty("stage2"));
 	if (st < 14) {
-	     eim.broadcastPlayerMsg(6, "Cellion has been spawned somewhere in the map.");
+	     eim.broadcastPlayerMsg(6, "遠古精靈出現了。");
 	     var mob = em.getMonster(9300040);
 	     em.setProperty("stage2", st+1);
 	     eim.registerMonster(mob);
