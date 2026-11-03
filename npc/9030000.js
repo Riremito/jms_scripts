@@ -12,12 +12,12 @@ function action(mode, type, selection) {
 		case 0:
 			{
 				var npc_id = cm.getNpc();
-				var npc_shop = cm.createScriptNpcShop(npc_id);
-				npc_shop.add(2000005, 3000);
-				npc_shop.add(2050004, 500);
-				npc_shop.add(2070006, 30000);
-				npc_shop.add(2330000, 30000);
-				npc_shop.sendShop(cm.getPlayer());
+				var npc_shop = cm.createNpcShop(npc_id);
+				npc_shop.addItem(2000005, 3000);
+				npc_shop.addItem(2050004, 500);
+				npc_shop.addItem(2070006, 30000);
+				npc_shop.addItem(2330000, 30000);
+				npc_shop.start(cm.getPlayer());
 				break;
 			}
 		default:
